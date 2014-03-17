@@ -105,6 +105,11 @@ public class PlayScreen implements Screen {
             // Turn the ball so it looks like it hasn't actually turned but the
             // world has turned around it.
             this.ballBody.setTransform(pos, (angle + angleChange) / MathUtils.radiansToDegrees);
+
+            // Wake up the ball since changing gravity doesn't automatically wake it.
+            // FIXME: Gonna need to find a better solution for this in the "real thing"
+            // since there will be many entities to awaken.
+            this.ballBody.setAwake(true);
         }
 
         camera.translate(cameraPosDelta);
