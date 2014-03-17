@@ -34,6 +34,9 @@ public class PlayScreen implements Screen {
     private Box2DDebugRenderer debugRenderer;
     private World physicsWorld;
     private Body ballBody;
+    private float worldAngle = 0f;
+    private Vector2 cameraPos = new Vector2(0, 0);
+    private Vector2 cameraPosDelta = new Vector2(0, 0);
 
     private static final float PIXELS_PER_METER = 32f;
 
@@ -50,6 +53,12 @@ public class PlayScreen implements Screen {
         camera.update();
 
         Vector2 pos = this.ballBody.getPosition();
+        float angle = this.ballBody.getAngle() * MathUtils.radiansToDegrees;
+
+        cameraPosDelta.x = pos.x * PIXELS_PER_METER;
+        cameraPosDelta.y = pos.y * PIXELS_PER_METER;
+        cameraPosDelta.sub(cameraPos);
+        cameraPosDelta.limit(32f);
 
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
@@ -63,7 +72,7 @@ public class PlayScreen implements Screen {
             128f,
             1f,
             1f,
-            this.ballBody.getAngle() * MathUtils.radiansToDegrees
+            angle
         );
         batch.end();
 
@@ -76,20 +85,32 @@ public class PlayScreen implements Screen {
             this.ballBody.applyLinearImpulse(0.8f, 0, pos.x, pos.y, true);
         }
 
-        if (Gdx.input.isKeyPressed(Keys.UP)) {
-            camera.translate(0, 1, 0);
-        }
-        if (Gdx.input.isKeyPressed(Keys.DOWN)) {
-            camera.translate(0, -1, 0);
-        }
+        float angleChange = 0.0f;
+        boolean changedAngle = false;
         if (Gdx.input.isKeyPressed(Keys.LEFT)) {
-            camera.translate(-1, 0, 0);
+            angleChange = -4f;
         }
         if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
-            camera.translate(1, 0, 0);
+            angleChange = 4f;
+            changedAngle = true;
         }
 
-        physicsWorld.step(1/300f, 6, 2);
+        if (angleChange != 0f) {
+            camera.rotate(angleChange, 0f, 0f, 1f);
+            worldAngle += angleChange;
+            Vector2 newGravity = new Vector2(0, -10);
+            newGravity.rotate(worldAngle);
+            this.physicsWorld.setGravity(newGravity);
+            pos = this.ballBody.getPosition();
+            // Turn the ball so it looks like it hasn't actually turned but the
+            // world has turned around it.
+            this.ballBody.setTransform(pos, (angle + angleChange) / MathUtils.radiansToDegrees);
+        }
+
+        camera.translate(cameraPosDelta);
+        cameraPos.add(cameraPosDelta);
+
+        physicsWorld.step(1/30f, 6, 2);
 
     }
 
@@ -130,13 +151,15 @@ public class PlayScreen implements Screen {
         Body groundBody = physicsWorld.createBody(groundBodyDef);
 
         ChainShape groundShape = new ChainShape();
-        groundShape.createChain(
-            new float[] {
-                -12.0f, 2.0f,
-                -11.0f, 0.8f,
-                -10.0f, 0.1f,
-                -9.0f, 0f,
-                12.0f, 2.0f,
+        groundShape.createLoop(
+            new Vector2[] {
+                new Vector2(-12.0f, 2.0f),
+                new Vector2(-11.0f, 0.8f),
+                new Vector2(-10.0f, 0.1f),
+                new Vector2(-9.0f, 0f),
+                new Vector2(12.0f, 2.0f),
+                new Vector2(12.0f, 30f),
+                new Vector2(-12.0f, 30f),
             }
         );
 
