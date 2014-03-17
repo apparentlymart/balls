@@ -18,6 +18,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.ChainShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.Input.Keys;
@@ -128,10 +129,25 @@ public class PlayScreen implements Screen {
 
         Body groundBody = physicsWorld.createBody(groundBodyDef);
 
-        PolygonShape groundBox = new PolygonShape();
-        groundBox.setAsBox(camera.viewportWidth / PIXELS_PER_METER, 2.0f);
-        groundBody.createFixture(groundBox, 0.0f);
-        groundBox.dispose();
+        ChainShape groundShape = new ChainShape();
+        groundShape.createChain(
+            new float[] {
+                -12.0f, 2.0f,
+                -11.0f, 0.8f,
+                -10.0f, 0.1f,
+                -9.0f, 0f,
+                12.0f, 2.0f,
+            }
+        );
+
+        // Or the ground could be a rectangle.
+        //PolygonShape groundShape = new PolygonShape();
+        //groundShape.setAsBox(camera.viewportWidth / PIXELS_PER_METER, 2.0f);
+
+        groundBody.createFixture(groundShape, 0.0f);
+        groundShape.dispose();
+
+
     }
 
     @Override
