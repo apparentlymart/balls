@@ -34,6 +34,8 @@ public class PlayScreen implements Screen {
     private World physicsWorld;
     private Body ballBody;
 
+    private static final float PIXELS_PER_METER = 32f;
+
     public PlayScreen(Game game) {
         this.game = game;
     }
@@ -52,8 +54,8 @@ public class PlayScreen implements Screen {
         batch.begin();
         batch.draw(
             ballTextureRegion,
-            (pos.x * 10f) - 64f,
-            (pos.y * 10f) - 64f,
+            (pos.x * PIXELS_PER_METER) - 64f,
+            (pos.y * PIXELS_PER_METER) - 64f,
             64f,
             64f,
             128f,
@@ -64,7 +66,7 @@ public class PlayScreen implements Screen {
         );
         batch.end();
 
-        debugRenderer.render(physicsWorld, new Matrix4(camera.combined).scale(10f, 10f, 10f));
+        debugRenderer.render(physicsWorld, new Matrix4(camera.combined).scale(PIXELS_PER_METER, PIXELS_PER_METER, 1f));
 
         if (Gdx.input.isKeyPressed(Keys.A)) {
             this.ballBody.applyLinearImpulse(-0.8f, 0, pos.x, pos.y, true);
@@ -104,12 +106,12 @@ public class PlayScreen implements Screen {
 
         BodyDef ballBodyDef = new BodyDef();
         ballBodyDef.type = BodyDef.BodyType.DynamicBody;
-        ballBodyDef.position.set(0, 50);
+        ballBodyDef.position.set(0, 20);
 
         ballBody = physicsWorld.createBody(ballBodyDef);
 
         CircleShape ballShape = new CircleShape();
-        ballShape.setRadius(6.4f);
+        ballShape.setRadius(64f / PIXELS_PER_METER);
 
         FixtureDef ballFixtureDef = new FixtureDef();
         ballFixtureDef.shape = ballShape;
@@ -122,12 +124,12 @@ public class PlayScreen implements Screen {
         ballShape.dispose();
 
         BodyDef groundBodyDef = new BodyDef();
-        groundBodyDef.position.set(new Vector2(0, 10));
+        groundBodyDef.position.set(new Vector2(0, 2));
 
         Body groundBody = physicsWorld.createBody(groundBodyDef);
 
         PolygonShape groundBox = new PolygonShape();
-        groundBox.setAsBox(camera.viewportWidth, 10.0f);
+        groundBox.setAsBox(camera.viewportWidth / PIXELS_PER_METER, 2.0f);
         groundBody.createFixture(groundBox, 0.0f);
         groundBox.dispose();
     }
