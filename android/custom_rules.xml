@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="custom_rules">
+  <target name="-pre-build">
+    <copy todir="libs" verbose="${verbose}">
+      <fileset dir="${root.dir}/main/libs" includes="gdx.jar" />
+    </copy>
+  </target>
+</project>

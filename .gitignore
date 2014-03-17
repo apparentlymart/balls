@@ -1,0 +1,10 @@
+*.class
+*.apk
+*.ap_
+*.dex
+desktop/bin/*
+android/gen/*
+local.properties
+android/libs/gdx.jar
+images-packed.atlas
+images-packed.png
