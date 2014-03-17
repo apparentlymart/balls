@@ -163,18 +163,24 @@ public class PlayScreen implements Screen {
                 new Vector2(-10.0f, 0.1f),
                 new Vector2(-9.0f, 0f),
                 new Vector2(12.0f, 2.0f),
-                new Vector2(12.0f, 30f),
-                new Vector2(-12.0f, 30f),
+                new Vector2(12.0f, 50f),
+                new Vector2(-12.0f, 50f),
             }
         );
-
-        // Or the ground could be a rectangle.
-        //PolygonShape groundShape = new PolygonShape();
-        //groundShape.setAsBox(camera.viewportWidth / PIXELS_PER_METER, 2.0f);
 
         groundBody.createFixture(groundShape, 0.0f);
         groundShape.dispose();
 
+        BodyDef platformBodyDef = new BodyDef();
+        platformBodyDef.position.set(new Vector2(2f, 40f));
+
+        Body platformBody = physicsWorld.createBody(platformBodyDef);
+
+        PolygonShape platformShape = new PolygonShape();
+        platformShape.setAsBox(8f, 1f);
+
+        platformBody.createFixture(platformShape, 0.0f);
+        platformShape.dispose();
 
     }
 
